@@ -291,9 +291,9 @@ def Qabs(material,rad):
 		Qabs_fun: absorption coefficient function, dependent on the wavelength in microns
 	"""
 	if material == "silicate":
-		data = pd.read_csv("Qabs_Sil_81")
+		data = pd.read_csv("Qabs_tables/Qabs_Sil_81")
 	else: # material == "carbonaceous"
-		data = pd.read_csv("Qabs_Gra_81")
+		data = pd.read_csv("Qabs_tables/Qabs_Gra_81")
 
 	if rad >= 1e-3 and rad <=10: # Values taken from Qabs_Sil_81 and Qabs_Gra_81
 		kw = list(data.columns.values)
@@ -538,7 +538,7 @@ def main():
 	# at short wavelengths. If you change it, be careful and check that your interpolation is not noisy.
 	# See get_Im_n for more information.
 	if model_data['material'] == "silicate":
-		data = pd.read_csv('silicate_refractive_indexes.csv',comment="#",sep="\t")
+		data = pd.read_csv('refractive_indices/silicate_refractive_indices.csv',comment="#",sep="\t")
 		uv_cols = data['wave(um)']< 1 # Wavelengths lower than 1 micron
 		x = data['wave(um)'][uv_cols]
 		y = data['Im(n)'][uv_cols]
@@ -546,12 +546,12 @@ def main():
 		f_spline = interp1d(x,y,kind="cubic",fill_value = "extrapolate")
 	else:
 		# Parallel
-		data_para = pd.read_csv('graphite_refractive_indexes_para.csv',comment="#",sep="\t")
+		data_para = pd.read_csv('refractive_indices/graphite_refractive_indices_para.csv',comment="#",sep="\t")
 		uv_cols = data_para['wave(um)']< 1 # Wavelengths lower than 1 micron
 		x_para = data_para['wave(um)'][uv_cols]
 		y_para = data_para['Im(n)'][uv_cols]
 		# Perpendicular
-		data_perp = pd.read_csv('graphite_refractive_indexes_perp.csv',comment="#",sep="\t")
+		data_perp = pd.read_csv('refractive_indices/graphite_refractive_indices_perp.csv',comment="#",sep="\t")
 		uv_cols = data_perp['wave(um)']< 1 # Wavelengths lower than 1 micron
 		x_perp = data_perp['wave(um)'][uv_cols]
 		y_perp = data_perp['Im(n)'][uv_cols]
