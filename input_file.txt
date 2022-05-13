@@ -1,0 +1,30 @@
+# Input file to compute the distribution of Dust Grain Charges.
+# Read carefully the instructions given below.
+#
+#
+#                  GRAIN PROPERTIES
+#
+#	rad: dust grain radius in microns
+#	material: grain material, either "silicate" or "carbonaceous"
+#	Z0: reference charge. By default use Z0 = 0.
+#	Zmin: minimum charge desired.
+#	Zmax: maximum charge desired.
+rad = 0.1
+material = silicate
+Z0 = -25
+Zmin = -50
+Zmax = 0
+#                  GAS PROPERTIES
+#	composition: Gas composition. By default is set to H
+#	T: temperature in K
+#	dens: density in cm-3
+#	frac_ion: ionization fraction
+composition = H
+T = 6000
+dens = 0.57
+frac_ion = 1
+#                  RADIATION FIELD
+#	rf: radiation field selected. 1 = MMP83, 2 = SunRF
+#       rf_intensity: intensity of the radiation field, between 0 and 1.
+rf = 1
+rf_intensity = 1
