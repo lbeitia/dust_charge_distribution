@@ -106,7 +106,9 @@ def main():
 		raise ValueError("Only MMP83 (1) and Solar (2) radiation fields have been implemented up to now.")
 
 	# Main Body
-	probabilities = dust_charge_distribution(gas,model_data["rad"],model_data["Z0"],model_data["material"],model_data["Zmin"],model_data["Zmax"],f_lin,f_spline,Qabs_fun,ISRF)
+	probabilities = dust_charge_distribution(gas,model_data["rad"],model_data["Z0"],
+			model_data["material"],model_data["Zmin"],model_data["Zmax"],
+			f_lin,f_spline,Qabs_fun,ISRF)
 	Z_values = np.arange(model_data["Zmin"],model_data["Zmax"]+1)
 	df = pd.DataFrame.from_dict({"Z":Z_values,"prob":probabilities})
 	df.to_csv('DustCharge_Distribution.txt',sep="\t",index=False)
