@@ -1,10 +1,14 @@
-from dust_charge_distribution_classes import DustGrain, Gas
+
 from scipy import integrate
-from scipy.interpolate import interp1d
 import numpy as np
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
+import sys
+sys.path.insert(0,'src/')
+from data_interpolation import *
+from dust_charge_distribution_classes import DustGrain, Gas
+
 
 k_bolt = 1.3807e-16 # Boltzmann's constant, erg/K
 le = 10e-8 # Electron length, in cm.  Taken to be 10A.
@@ -278,50 +282,7 @@ def Jpe_val(Grain,Gas,f_lin,f_spline,Qabs_fun,ISRF):
 
 
 
-def Qabs(material,rad):
-	"""
-	Absorption coefficient of a dust grain at a given frequency.
-	Absorption properties vary with material and wavelength, and it is necessary to have
-	precise measures.
-	Here I use  the tables provided by Draine in his webpage to compute an function that will return the refractive index.
-	Input:
-		material: grain material
-		radius: dust grain radius, in microns
-	Output:
-		Qabs_fun: absorption coefficient function, dependent on the wavelength in microns
-	"""
-	if material == "silicate":
-		data = pd.read_csv("Qabs_tables/Qabs_Sil_81")
-	else: # material == "carbonaceous"
-		data = pd.read_csv("Qabs_tables/Qabs_Gra_81")
 
-	if rad >= 1e-3 and rad <=10: # Values taken from Qabs_Sil_81 and Qabs_Gra_81
-		kw = list(data.columns.values)
-		i = 0
-		available_rads = [] # Los índices están corridos una posición a la izda respecto a los de data.
-		while i < len(kw):
-			if "=" in kw[i]:
-				line = kw[i].split("=")
-				available_rads.append(float(line[1]))
-			i+=1
-		ldo = pd.to_numeric(data['wav_microns'])
-		if rad in available_rads:
-			ind = available_rads.index(rad)
-			Qabs = data[kw[ind+1]]
-		else:
-			first_elem = next(x[0] for x in enumerate(available_rads) if x[1]>rad)
-			rad_low = available_rads[first_elem-1]
-			Q_low = data[kw[first_elem]]
-			rad_up = available_rads[first_elem]
-			Q_up = data[kw[first_elem+1]]
-			# Construyo Qabs mediante interpolación lineal de los dos valores superior e inferior
-			slp = (Q_up-Q_low)/(rad_up-rad_low)
-			Qabs = (rad-rad_low)*slp + Q_low
-	else:
-		raise ValueError("Absorption coefficient Qabs cannot be computed at that radius")
-	
-	return interp1d(ldo,Qabs,kind='linear',fill_value="extrapolate")
-	
 def get_freq_pet(Grain):
 	"""
 	This function returns the photoelectric threshold frequency for a given grain.
@@ -537,27 +498,8 @@ def main():
 	# It is necessary that the wavelength cut is set to 1 micron if we want to use spline interpolation
 	# at short wavelengths. If you change it, be careful and check that your interpolation is not noisy.
 	# See get_Im_n for more information.
-	if model_data['material'] == "silicate":
-		data = pd.read_csv('refractive_indices/silicate_refractive_indices.csv',comment="#",sep="\t")
-		uv_cols = data['wave(um)']< 1 # Wavelengths lower than 1 micron
-		x = data['wave(um)'][uv_cols]
-		y = data['Im(n)'][uv_cols]
-		f_lin = interp1d(x,y,kind="linear",fill_value="extrapolate")
-		f_spline = interp1d(x,y,kind="cubic",fill_value = "extrapolate")
-	else:
-		# Parallel
-		data_para = pd.read_csv('refractive_indices/graphite_refractive_indices_para.csv',comment="#",sep="\t")
-		uv_cols = data_para['wave(um)']< 1 # Wavelengths lower than 1 micron
-		x_para = data_para['wave(um)'][uv_cols]
-		y_para = data_para['Im(n)'][uv_cols]
-		# Perpendicular
-		data_perp = pd.read_csv('refractive_indices/graphite_refractive_indices_perp.csv',comment="#",sep="\t")
-		uv_cols = data_perp['wave(um)']< 1 # Wavelengths lower than 1 micron
-		x_perp = data_perp['wave(um)'][uv_cols]
-		y_perp = data_perp['Im(n)'][uv_cols]
-		# 1/3 - 2/3 approximation -> list
-		f_lin = [interp1d(x_para,y_para,kind="linear",fill_value="extrapolate"),interp1d(x_perp,y_perp,kind="linear",fill_value="extrapolate")]
-		f_spline = [interp1d(x_para,y_para,kind="cubic",fill_value="extrapolate"),interp1d(x_perp,y_perp,kind="cubic",fill_value="extrapolate")]
+	[f_lin, f_spline] = interpolate_refractive_indices(model_data["material"])
+
 	# Absorption coefficient function must be defined before the main loop because in that way, it will be computed
 	# only once, being more efficient.
 	Qabs_fun = Qabs(model_data['material'],model_data['rad'])
