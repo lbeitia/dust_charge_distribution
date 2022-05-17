@@ -107,3 +107,17 @@ def SunRF(freq):
 		
 	
 
+# ----------------------------------------------------------------------------# 
+#        Determine radiation field 
+# ----------------------------------------------------------------------------#
+def determine_radiation_field(rf, intensity):
+	"""
+	This function constructs the radiation field function
+	"""
+	if int(rf) == 1:
+		return(lambda nu: intensity*MMP83(nu))
+	elif int(rf) == 2:
+		return(lambda nu: intensity*SunRF(nu))
+	else:
+		raise ValueError("Only MMP83 (1) and Solar (2) radiation fields " + 
+				   "have been implemented up to now.")

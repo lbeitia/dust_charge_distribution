@@ -40,9 +40,9 @@ class DustGrain:
 			self.Nc = 468*np.power(self.rad/1e-7,3)
 		else:
 			raise ValueError("Only grains with radius greater than 0.03 microns (Classical grains) are allowed")
-		if isinstance(Z,int):
-			self.Z = Z
-		else:
+		try:
+			self.Z = int(Z)
+		except ValueError:
 			raise AttributeError("Dust Charge must be integer")
 		self.material = material
 		if self.material == "silicate":
