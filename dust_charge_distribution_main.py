@@ -1,4 +1,3 @@
-
 import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0,'src/')
@@ -8,6 +7,8 @@ from accretion_rates import *
 from stellar_spectra import *
 from photoelectric_emission_stellar import *
 from photoelectric_emission_cosmic_rays import *
+from accretion_rates_cosmic_rays import *
+
 
 # # # # # # # # # # # # # # # # # #
 #         Read Input file         #
@@ -23,7 +24,7 @@ def read_input_file():
 	param = {}
 	with open('input_file.txt') as input_file:
 		for line in input_file:
-			if "#" not in line and len(line)>1:
+			if "#" not in line and "=" in line:
 				[key, value_stn] = line.rstrip().replace(" ","").split("=")
 				value = determine_value_format(value_stn)
 				param[key] = value
@@ -78,8 +79,8 @@ def dust_charge_distribution(Gas, model_data,
 	while Z <= Zmax:
 		print("Computing the terms for Z =",Z)
 		# Dust grains involved
-		dust_grain_Zm1 = DustGrain(model_data["rad"],Z-1,model_data["material"])
-		dust_grain_Z = DustGrain(model_data["rad"],Z,model_data["material"])
+		dust_grain_Zm1 = DustGrain(model_data["rad"],Z-1,model_data["material"], model_data["solid_density"])
+		dust_grain_Z = DustGrain(model_data["rad"],Z,model_data["material"], model_data["solid_density"])
 		# 
 		J_pe = Jpe_val(dust_grain_Zm1, Gas, f_lin, f_spline, Qabs_fun,ISRF)
 		J_pe += Jpe_cond(dust_grain_Zm1,Gas,ISRF)
@@ -87,6 +88,7 @@ def dust_charge_distribution(Gas, model_data,
 		J_electron = J_accretion(dust_grain_Z,Gas,-1)
 		if model_data["include_CR"] == 1.0:
 			J_pe_CR = Jpe_CR(dust_grain_Zm1, model_data, f_lin, f_spline, Qabs_fun, F_UV)
+			Je_CR = J_accretion_CRs_elec(dust_grain_Z, model_data)
 		# Add probability
 		prob_pos = np.append(prob_pos, 
 					   (J_pe + J_ion + J_pe_CR)*prob_pos[Z-Z0-1]/J_electron)
@@ -95,8 +97,8 @@ def dust_charge_distribution(Gas, model_data,
 	while Z >= Zmin:
 		print("Computing the terms for Z =",Z)
 		# Dust grains involved
-		dust_grain_Zp1 = DustGrain(model_data["rad"],Z+1,model_data["material"])
-		dust_grain_Z = DustGrain(model_data["rad"],Z,model_data["material"])
+		dust_grain_Zp1 = DustGrain(model_data["rad"],Z+1,model_data["material"], model_data["solid_density"])
+		dust_grain_Z = DustGrain(model_data["rad"],Z,model_data["material"], model_data["solid_density"])
 		#
 		J_pe = Jpe_val(dust_grain_Z,Gas,f_lin,f_spline,Qabs_fun,ISRF)
 		J_pe += Jpe_cond(dust_grain_Z,Gas,ISRF)
@@ -147,6 +149,8 @@ def main():
 			f_lin,f_spline,Qabs_fun,radfield)
 	
 	# Post processing of results
+	# TO DO: put this into a separate function, and compute centroid
+	#        and dispersion
 	Z_values = np.arange(model_data["Zmin"],model_data["Zmax"]+1)
 	df = pd.DataFrame.from_dict({"Z":Z_values,"prob":probabilities})
 	df.to_csv('DustCharge_Distribution.txt',sep="\t",index=False)

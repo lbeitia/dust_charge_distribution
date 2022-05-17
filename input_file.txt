@@ -6,12 +6,14 @@
 # ----------------------------------------------------------------------------#
 #	rad: dust grain radius in microns
 #	material: grain material, either "silicate" or "carbonaceous"
+#   solid_density: dust internal density, in g/cm3
 #	Z0: reference charge. By default use Z0 = 0.
 #	Zmin: minimum charge desired.
 #	Zmax: maximum charge desired.
 #   The dust size distribution is computed from Zmin to Zmax.
 rad = 0.1
 material = silicate
+solid_density = 3.5
 Z0 = -25
 Zmin = -50
 Zmax = 0
@@ -45,8 +47,18 @@ rf_intensity = 1
 #      dust_albedo: between 0 and 1
 #      NH2_Av: influences the UV induced radiation field
 #      Rv: measurement of the extinction properties
-include_CR = 0
+#   Accretion of electrons (Ivlev+ 2015) - values from Draine & Salpeter 1979
+#      Emax: maximum energy (keV), typical values range from 0.2 to 0.4 keV
+#      deltae_max: value between 1.5 and 2.5
+#      alpha_cr_elec, beta_cr_elec, and C_cr_elec: constants for the
+#           definition of the CR spectrum
+include_CR = 1
 zeta_CR = 5e-17
 dust_albedo = 0.5
 NH2_Av = 1e21
 Rv = 3.1
+Emax = 0.3
+deltae_max = 2
+alpha_cr_elec = -1.5
+beta_cr_elec = 1.7
+C_cr_elec = 2.1e18

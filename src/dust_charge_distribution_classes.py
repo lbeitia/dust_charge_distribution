@@ -28,7 +28,7 @@ class DustGrain:
 		Emin: minimum energy required for tunneling (erg)
 		freq_phot: minimum frequency required to produce a photoelectron (Hz)
 	"""
-	def __init__(self,rad,Z,material):
+	def __init__(self,rad,Z,material, soliddens):
 		"""
 		rad: float value, in microns. Has to be greater than 0.03 microns
 		Z:   integer. Grain charge.
@@ -64,6 +64,9 @@ class DustGrain:
 
 		# Minimum frequency for photoelectric effect freq_phot		
 		self.freq_phot = (self.IPv + self.Emin)/h_planck # Hz
+		
+		# Internal solid density
+		self.solid_density = soliddens
 
 
 # # # # # # # # # # #

@@ -62,7 +62,7 @@ def get_freq_pdt(Grain):
 		freq_pdt: minimum frequency (Hz)
 	"""
 	global h_planck
-	Grain_aux = DustGrain(Grain.rad*1e4,Grain.Z + 1, Grain.material)
+	Grain_aux = DustGrain(Grain.rad*1e4,Grain.Z + 1, Grain.material, Grain.solid_density)
 	return (Grain_aux.EA + Grain.Emin)/h_planck
 
 
