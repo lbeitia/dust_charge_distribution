@@ -16,23 +16,40 @@ def read_input_file():
 	"""
 	Function that reads the parameters needed to perform the simulation.
 	We need dust properties, gas properties, and a radiation field.
+	Also Cosmic Rays.
 	Output:
 		param: dictionary containing the data.
 	"""
 	param = {}
-	floats_are = ['rad','dens','frac_ion','rf_intensity']
-	ints_are = ['Z0','Zmin','Zmax','T','rf']
 	with open('input_file.txt') as input_file:
 		for line in input_file:
 			if "#" not in line and len(line)>1:
-				new_line = line.rstrip().replace(" ","").split("=")
-				if new_line[0] in floats_are:
-					param[new_line[0]] = float(new_line[1])
-				elif new_line[0] in ints_are:
-					param[new_line[0]] = int(new_line[1])
-				else:
-					param[new_line[0]] = new_line[1]
+				[key, value_stn] = line.rstrip().replace(" ","").split("=")
+				value = determine_value_format(value_stn)
+				param[key] = value
 	return(param)
+
+
+def determine_value_format(stn):
+	"""
+	This function tries to convert the value stored in stn into a float.
+	Otherwise returns the original string removing trailing spaces.
+	"""
+	# Distinguish between string and float
+	try:
+		outval = float(stn)
+	except ValueError:
+		outval = stn.strip()
+	# Also consider numpy arrays
+	if '[' in stn:
+		newstn = stn.replace("[","")
+		newstn = newstn.replace("]","")
+		newstn = newstn.split(",")
+		outval = np.zeros(len(newstn), dtype = "int")
+		for i in range(0, len(newstn)):
+			outval[i] = int(newstn[i])
+	return(outval)
+
 
 # # # # # # # # # # # # # # # # # #
 #      Charge distribution        #
@@ -86,41 +103,42 @@ def main():
 	"""
 	# read input data
 	model_data = read_input_file()
+	print(model_data)
 	# Refractive index functions. In this way, I only compute them once.
 	# It is necessary that the wavelength cut is set to 1 micron if we want to use spline interpolation
 	# at short wavelengths. If you change it, be careful and check that your interpolation is not noisy.
 	# See get_Im_n for more information.
-	[f_lin, f_spline] = interpolate_refractive_indices(model_data["material"])
+	#[f_lin, f_spline] = interpolate_refractive_indices(model_data["material"])
 
 	# Absorption coefficient function must be defined before the main loop because in that way, it will be computed
 	# only once, being more efficient.
-	Qabs_fun = Qabs(model_data['material'],model_data['rad'])
+	#Qabs_fun = Qabs(model_data['material'],model_data['rad'])
 	#GAS
-	gas = Gas(model_data["composition"],model_data["T"],model_data["dens"],model_data["frac_ion"])
+	#gas = Gas(model_data["composition"],model_data["T"],model_data["dens"],model_data["frac_ion"])
 	# ISRF
-	if model_data["rf"] == 1:
-		ISRF = lambda nu: model_data["rf_intensity"]*MMP83(nu)
-	elif model_data["rf"] == 2:
-		ISRF = lambda nu: model_data["rf_intensity"]*SunRF(nu)
-	else:
-		raise ValueError("Only MMP83 (1) and Solar (2) radiation fields have been implemented up to now.")
+	#if model_data["rf"] == 1:
+	#	ISRF = lambda nu: model_data["rf_intensity"]*MMP83(nu)
+	#elif model_data["rf"] == 2:
+		#ISRF = lambda nu: model_data["rf_intensity"]*SunRF(nu)
+	#else:
+		#raise ValueError("Only MMP83 (1) and Solar (2) radiation fields have been implemented up to now.")
 
 	# Main Body
-	probabilities = dust_charge_distribution(gas,model_data["rad"],model_data["Z0"],
-			model_data["material"],model_data["Zmin"],model_data["Zmax"],
-			f_lin,f_spline,Qabs_fun,ISRF)
-	Z_values = np.arange(model_data["Zmin"],model_data["Zmax"]+1)
-	df = pd.DataFrame.from_dict({"Z":Z_values,"prob":probabilities})
-	df.to_csv('DustCharge_Distribution.txt',sep="\t",index=False)
-	fig = plt.figure()
-	plt.plot(Z_values,probabilities,lw=2,color='b')
-	plt.xlabel('Z')
-	plt.ylabel('f(Z)')
-	plt.title("Dust grain "+str(model_data["rad"])+" microns")
-	plt.tight_layout()
-	fig.savefig("Probabilities.eps")
-	plt.close(fig)
-	print("Chimpún")
+	#probabilities = dust_charge_distribution(gas,model_data["rad"],model_data["Z0"],
+	#		model_data["material"],model_data["Zmin"],model_data["Zmax"],
+	#		f_lin,f_spline,Qabs_fun,ISRF)
+	#Z_values = np.arange(model_data["Zmin"],model_data["Zmax"]+1)
+	#df = pd.DataFrame.from_dict({"Z":Z_values,"prob":probabilities})
+	#df.to_csv('DustCharge_Distribution.txt',sep="\t",index=False)
+	#fig = plt.figure()
+	#plt.plot(Z_values,probabilities,lw=2,color='b')
+	#plt.xlabel('Z')
+	#plt.ylabel('f(Z)')
+	#plt.title("Dust grain "+str(model_data["rad"])+" microns")
+	#plt.tight_layout()
+	#fig.savefig("Probabilities.eps")
+	#plt.close(fig)
+	#print("Chimpún")
 
 
 if __name__ == "__main__":

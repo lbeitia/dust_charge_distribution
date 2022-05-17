@@ -1,20 +1,23 @@
 # Input file to compute the distribution of Dust Grain Charges.
 # Read carefully the instructions given below.
 #
-#
-#                  GRAIN PROPERTIES
-#
+# ----------------------------------------------------------------------------#
+#                           GRAIN PROPERTIES
+# ----------------------------------------------------------------------------#
 #	rad: dust grain radius in microns
 #	material: grain material, either "silicate" or "carbonaceous"
 #	Z0: reference charge. By default use Z0 = 0.
 #	Zmin: minimum charge desired.
 #	Zmax: maximum charge desired.
+#   The dust size distribution is computed from Zmin to Zmax.
 rad = 0.1
 material = silicate
 Z0 = -25
 Zmin = -50
 Zmax = 0
-#                  GAS PROPERTIES
+# ----------------------------------------------------------------------------#
+#                            GAS PROPERTIES
+# ----------------------------------------------------------------------------#
 #	composition: Gas composition. By default is set to H
 #	T: temperature in K
 #	dens: density in cm-3
@@ -23,8 +26,27 @@ composition = H
 T = 6000
 dens = 0.57
 frac_ion = 1
-#                  RADIATION FIELD
+# ----------------------------------------------------------------------------#
+#                            RADIATION FIELD
+# ----------------------------------------------------------------------------#
 #	rf: radiation field selected. 1 = MMP83, 2 = SunRF
 #       rf_intensity: intensity of the radiation field, between 0 and 1.
 rf = 1
 rf_intensity = 1
+# ----------------------------------------------------------------------------#
+#                            COSMIC RAYS
+# ----------------------------------------------------------------------------#
+#   include_CR: either CRs are included (1) or not (0)
+#   if include_CR == 0, the rest of the parameters are ignored by the
+#                       programme
+#   Two terms are involved if CRs are included, each with their parameters:
+#   Photoionisation by H2 fluorescence (Ivlev+ 2015):
+#      zeta_CR: impact rate of CRs
+#      dust_albedo: between 0 and 1
+#      NH2_Av: influences the UV induced radiation field
+#      Rv: measurement of the extinction properties
+include_CR = 1
+zeta_CR = 5e-17
+dust_albedo = 0.5
+NH2_Av = 1e21
+Rv = 3.1
