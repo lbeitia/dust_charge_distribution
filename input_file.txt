@@ -45,7 +45,7 @@ rf_intensity = 1
 #      dust_albedo: between 0 and 1
 #      NH2_Av: influences the UV induced radiation field
 #      Rv: measurement of the extinction properties
-include_CR = 1
+include_CR = 0
 zeta_CR = 5e-17
 dust_albedo = 0.5
 NH2_Av = 1e21

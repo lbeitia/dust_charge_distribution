@@ -69,10 +69,12 @@ def dust_charge_distribution(Gas, model_data,
 	Z0 = int(model_data["Z0"])
 	Zmin = int(model_data["Zmin"])
 	Zmax = int(model_data["Zmax"])
+	F_UV = get_F_UV_CR(model_data)
 	
 	prob_neg = np.array([1])
 	prob_pos = np.array([1])
 	Z = Z0 + 1
+	J_pe_CR = 0.0
 	while Z <= Zmax:
 		print("Computing the terms for Z =",Z)
 		# Dust grains involved
@@ -81,9 +83,10 @@ def dust_charge_distribution(Gas, model_data,
 		# 
 		J_pe = Jpe_val(dust_grain_Zm1, Gas, f_lin, f_spline, Qabs_fun,ISRF)
 		J_pe += Jpe_cond(dust_grain_Zm1,Gas,ISRF)
-		J_pe_CR = 0.0
 		J_ion = J_accretion(dust_grain_Zm1,Gas,1)
 		J_electron = J_accretion(dust_grain_Z,Gas,-1)
+		if model_data["include_CR"] == 1.0:
+			J_pe_CR = Jpe_CR(dust_grain_Zm1, model_data, f_lin, f_spline, Qabs_fun, F_UV)
 		# Add probability
 		prob_pos = np.append(prob_pos, 
 					   (J_pe + J_ion + J_pe_CR)*prob_pos[Z-Z0-1]/J_electron)
@@ -97,10 +100,11 @@ def dust_charge_distribution(Gas, model_data,
 		#
 		J_pe = Jpe_val(dust_grain_Z,Gas,f_lin,f_spline,Qabs_fun,ISRF)
 		J_pe += Jpe_cond(dust_grain_Z,Gas,ISRF)
-		J_pe_CR = 0.0
+		if model_data["include_CR"] == 1.0:
+			J_pe_CR = Jpe_CR(dust_grain_Z, model_data, f_lin, f_spline, Qabs_fun, F_UV)
 		J_ion = J_accretion(dust_grain_Z,Gas,1)
 		J_electron = J_accretion(dust_grain_Zp1,Gas,-1)
-		# Add probabiliyu
+		# Add probability
 		prob_neg = np.append(prob_neg, 
 					   prob_neg[Z0-Z-1]*J_electron/(J_pe + J_ion + J_pe_CR))
 		Z-=1
