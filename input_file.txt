@@ -21,14 +21,21 @@ Zmax = 0
 # ----------------------------------------------------------------------------#
 #                            GAS PROPERTIES
 # ----------------------------------------------------------------------------#
-#	composition: Gas composition. By default is set to H
-#	T: temperature in K
-#	dens: density in cm-3
-#	frac_ion: ionization fraction
-composition = H
-T = 6000
-dens = 0.57
-frac_ion = 1
+#	max_energy: maximum energy [eV] of a photon that can propagate in the gas,
+#               typically 13.6 eV
+#	n_e: electron density in cm-3
+#   T_e: temperature of electrons in K
+#   For ions the input are similars, but they have to be passed inside a list
+#   so that several ionic species may be considered
+#   n_ion: list of ion densities in cm-3
+#   m_ion: list of ion masses in g
+#   T_ion: list of ion temperatures in K
+max_energy = 13.6
+n_e = 0.57
+T_e = 6000
+n_ion = [0.57, 0.001]
+m_ion = [1.6726e-24, 1e-25]
+T_ion = [6000, 6000]
 # ----------------------------------------------------------------------------#
 #                            RADIATION FIELD
 # ----------------------------------------------------------------------------#

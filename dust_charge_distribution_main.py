@@ -46,9 +46,9 @@ def determine_value_format(stn):
 		newstn = stn.replace("[","")
 		newstn = newstn.replace("]","")
 		newstn = newstn.split(",")
-		outval = np.zeros(len(newstn), dtype = "int")
+		outval = np.zeros(len(newstn), dtype = "float")
 		for i in range(0, len(newstn)):
-			outval[i] = int(newstn[i])
+			outval[i] = float(newstn[i])
 	return(outval)
 
 
@@ -172,8 +172,9 @@ def main():
 	# because in that way, it will be computed only once, being more efficient.
 	Qabs_fun = Qabs(model_data['material'],model_data['rad'])
 	# GAS
-	gas = Gas(model_data["composition"], model_data["T"], 
-			model_data["dens"], model_data["frac_ion"])
+	gas = Gas(model_data["max_energy"], model_data["n_e"], 
+			model_data["T_e"], model_data["n_ion"], model_data['m_ion'],
+			model_data["T_ion"])
 	# Radiation Field
 	radfield = determine_radiation_field(model_data["rf"],
 									model_data["rf_intensity"])

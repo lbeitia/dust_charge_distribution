@@ -17,24 +17,34 @@ def J_accretion(Grain,Gas,species):
 		Jspec: accretion rate for selected species
 	"""
 	global k_bolt
+	Jacc = 0.0
 	if species == 1:
-		ni = Gas.dion
-		vi = np.sqrt(8*k_bolt*Gas.Tion/(np.pi*Gas.ion_mass))
+		# Take into account multi-ionic mixture
+		number_of_ions = len(Gas.dion)
+		for numbi in range(0, number_of_ions):
+			ni = Gas.dion[numbi]
+			Ti = Gas.Tion[numbi]
+			vi = np.sqrt(8*k_bolt*Ti/(np.pi*Gas.ion_mass[numbi]))
+			Jhat = get_Jhat(Grain, Ti, species)
+			sticking_coeff = get_sticking_coeff(species, Grain)
+			Jacc += ni*sticking_coeff*vi*np.pi*np.power(Grain.rad,2)*Jhat
 	elif species == -1:
 		ni = Gas.delec
 		vi = np.sqrt(8*k_bolt*Gas.Telec/(np.pi*Gas.elec_mass))
+		Jhat = get_Jhat(Grain, Gas.Telec, species)
+		sticking_coeff = get_sticking_coeff(species, Grain)
+		Jacc += ni*sticking_coeff*vi*np.pi*np.power(Grain.rad,2)*Jhat
 	else:
 		raise ValueError("Species not available. Choose ions (1)" +
 					"or electrons (-1)")
-	Jhat = get_Jhat(Grain,Gas,species)
-	sticking_coeff = get_sticking_coeff(species,Grain)
-	return ni*sticking_coeff*vi*np.pi*np.power(Grain.rad,2)*Jhat
+	
+	return(Jacc)
 
 
-def get_Jhat(Grain,Gas,species):
+def get_Jhat(Grain, Tspecies,species):
 	"""
 	Function that computes the scaling coefficient Jhat, following Draine & Sutin (1987).
-	We consider that ions are singly charged, because my initial problem only considers gas of purely H.
+	We consider that all species are singly charged
 	Input:
 		Grain: DustGrain object
 		Gas: Gas object
@@ -43,12 +53,7 @@ def get_Jhat(Grain,Gas,species):
 	"""
 	global e_2
 	rel_ch = Grain.Z/species # Ze/qi = Z/+-1
-	if species == 1:
-		red_temp = Grain.rad*k_bolt*Gas.Tion/e_2 # Reduced temperature akT/(qi^2)
-	elif species == -1:
-		red_temp = Grain.rad*k_bolt*Gas.Telec/e_2 # Reduced temperature akT/(qi^2)
-	else:
-		raise ValueError("Species not available. Choose ions (1) or electrons (-1)")
+	red_temp = Grain.rad*k_bolt*Tspecies/e_2 # Reduced temperature akT/(qi^2)
 	
 	if rel_ch == 0:
 		Jhat = 1+np.sqrt(np.pi/(2*red_temp))

@@ -87,64 +87,15 @@ class Gas:
 		ion_mass: mass of the ionic species (g)
 		electron_mass: mass of an electron (g)
 	"""
-	def __init__(self,comp,T,dens,ioniz_frac):
-		if T < 0 or dens < 0 or ioniz_frac < 0:
-			raise ValueError("Check your parameters. T/dens/ioniz_frac cannot be negative!")
-		else:
-			if comp == "H":
-				self.comp = comp
-				self.T = T
-				self.dens = dens
-				self.ioniz_frac = ioniz_frac
-				self.dion = self.dens*self.ioniz_frac
-				self.dneutral = self.dens-self.dion
-				self.delec = self.dion # Atomic hydrogen only has one electron
-				self.ion_mass = 1.6726e-24 # mass of HII, g
-				self.elec_mass = 9.1094e-28 # mass of an electron, g
-				self.max_energy = 13.6 # Maximum energy of an electron that can propagate inside the gas, eV
-				self.Tion = T
-				self.Telec = T
-			elif comp == "H2+HCO+":
-				self.comp = comp
-				self.T = T
-				self.dens = dens 
-				self.ioniz_frac = ioniz_frac
-				self.dion = self.dens*self.ioniz_frac # cm3
-				self.dneutral = self.dens-self.dion
-				self.delec = self.dion # as many electrons as HCO+ ions
-				self.ion_mass = 29*1.67e-24 # mass of HCO+, g
-				self.elec_mass = 9.1094e-28 # mass of an electron, g
-				self.max_energy = 13.6 # Maximum energy of an electron that can propagate inside the gas, eV
-				self.Tion = T
-				self.Telec = T
-			elif comp == "O+O+_northpole":
-				self.comp = comp
-				self.T = T # not used
-				self.dens = dens # not used
-				self.ioniz_frac = ioniz_frac # not used
-				self.dion = 3.452e4 # cm-3, IRI2016 model
-				self.dneutral = 1.545e7 # cm-3, NRLMSISE-00 model
-				self.delec = 3.63e4 # cm-3, IRI2016 model
-				self.ion_mass= 15.999*1.67e-24 # oxygen mass, g
-				self.elec_mass = 9.109e-28 # electron mass, g
-				self.max_energy = 10.375 # imposed by the spectrum
-				self.Tion = 1378.6 # K
-				self.Telec = 2562.6 # K
-			elif comp == "O+O+_southpole":
-				self.comp = comp
-				self.T = T # not used
-				self.dens = dens # not used
-				self.ioniz_frac = ioniz_frac # not used
-				self.dion = 8.928e4 # cm-3, IRI2016 model
-				self.dneutral = 2.768e7 # cm-3, NRLMSISE-00 model
-				self.delec = 9.29e4 # cm-3, IRI2016 model
-				self.ion_mass= 15.999*1.67e-24 # oxygen mass, g
-				self.elec_mass = 9.109e-28 # electron mass, g
-				self.max_energy = 10.375 # eV, imposed by the spectrum
-				self.Tion = 1403.1 # K
-				self.Telec = 2150.3 # K
-			else:
-				raise Warning("Gas composition not available")
+	def __init__(self,max_energy, n_e, T_e, n_ion_list, m_ion_list, T_ion_list):
+		self.max_energy = max_energy
+		self.delec = n_e
+		self.Telec = T_e
+		self.dion = n_ion_list
+		self.ion_mass = m_ion_list
+		self.Tion = T_ion_list
+		self.elec_mass = 9.1094e-28 # mass of an electron, g
+		
 # -------------------------------------------------------
 
 
