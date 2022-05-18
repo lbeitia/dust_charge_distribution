@@ -104,6 +104,7 @@ def dust_charge_distribution(Gas, model_data,
 		J_pe += Jpe_cond(dust_grain_Z,Gas,ISRF)
 		if model_data["include_CR"] == 1.0:
 			J_pe_CR = Jpe_CR(dust_grain_Z, model_data, f_lin, f_spline, Qabs_fun, F_UV)
+			Je_CR = J_accretion_CRs_elec(dust_grain_Zp1, model_data)
 		J_ion = J_accretion(dust_grain_Z,Gas,1)
 		J_electron = J_accretion(dust_grain_Zp1,Gas,-1)
 		# Add probability
@@ -115,18 +116,50 @@ def dust_charge_distribution(Gas, model_data,
 	dust_distrib = np.append(dust_distrib,prob_pos)
 	dust_distrib = dust_distrib/sum(dust_distrib)
 	return dust_distrib
+
+
+def compute_centroid_and_write_file(model_data, probabilities):
+	"""
+	This function finds the centroid of the distribution and writes it
+	in a file together with the full charge distribution,
+	Input: 
+		model_data
+		probabilities
+	Output:
+		DustCharge_Distribution.txt
+	"""
+	Z_values = np.arange(model_data["Zmin"],model_data["Zmax"]+1)
+	df = pd.DataFrame.from_dict({"Z":Z_values,"prob":probabilities})
+	centroid = np.round(np.sum(Z_values * probabilities), 2)
+	dispersion2 = np.sum(probabilities * np.power(Z_values - centroid,2))
+	dispersion = np.round(np.sqrt(dispersion2), 2)
+	
+	with open(model_data['out_fname'], 'w') as f:
+		f.write('# <Z> = ' + str(centroid) + '\n')
+		f.write('# sigma_Z = ' + str(dispersion) + '\n')
+
+	df.to_csv(model_data['out_fname'],sep="\t",index=False, mode = 'a')
+	
+	if model_data['plot_distribution'] == 1.0:
+		fig = plt.figure()
+		plt.plot(Z_values,probabilities,lw=2,color='b')
+		plt.xlabel('Z')
+		plt.ylabel('f(Z)')
+		plt.title("Dust grain "+str(model_data["rad"])+" microns")
+		plt.tight_layout()
+		fig.savefig("Probabilities.eps")
+		plt.close(fig)
+
+
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 # --------------------------------------------------------------------------- #
 
-
-import matplotlib.pyplot as plt
 
 def main():
 	"""
 	Main function that computes the charge probability distribution of a
 	given population of dust grains.
-	It reads the input from an input file, DD_input_file.txt. 
 	Output: 
 		dust_distrib.txt: file containing the values of Z with the 
 							corresponding probability
@@ -149,20 +182,8 @@ def main():
 			f_lin,f_spline,Qabs_fun,radfield)
 	
 	# Post processing of results
-	# TO DO: put this into a separate function, and compute centroid
-	#        and dispersion
-	Z_values = np.arange(model_data["Zmin"],model_data["Zmax"]+1)
-	df = pd.DataFrame.from_dict({"Z":Z_values,"prob":probabilities})
-	df.to_csv('DustCharge_Distribution.txt',sep="\t",index=False)
-	fig = plt.figure()
-	plt.plot(Z_values,probabilities,lw=2,color='b')
-	plt.xlabel('Z')
-	plt.ylabel('f(Z)')
-	plt.title("Dust grain "+str(model_data["rad"])+" microns")
-	plt.tight_layout()
-	fig.savefig("Probabilities.eps")
-	plt.close(fig)
-	print("Chimpún")
+	compute_centroid_and_write_file(model_data, probabilities)
+
 
 
 if __name__ == "__main__":

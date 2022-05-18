@@ -11,6 +11,7 @@
 #	Zmin: minimum charge desired.
 #	Zmax: maximum charge desired.
 #   The dust size distribution is computed from Zmin to Zmax.
+#   Note that Zmin < Z0 < Zmax
 rad = 0.1
 material = silicate
 solid_density = 3.5
@@ -41,7 +42,7 @@ rf_intensity = 1
 #   include_CR: either CRs are included (1) or not (0)
 #   if include_CR == 0, the rest of the parameters are ignored by the
 #                       programme
-#   Two terms are involved if CRs are included, each with their parameters:
+#   Two terms are involved if CRs are included, each with their own parameters:
 #   Photoionisation by H2 fluorescence (Ivlev+ 2015):
 #      zeta_CR: impact rate of CRs
 #      dust_albedo: between 0 and 1
@@ -51,8 +52,8 @@ rf_intensity = 1
 #      Emax: maximum energy (keV), typical values range from 0.2 to 0.4 keV
 #      deltae_max: value between 1.5 and 2.5
 #      alpha_cr_elec, beta_cr_elec, and C_cr_elec: constants for the
-#           definition of the CR spectrum
-include_CR = 1
+#           definition of the CR spectrum, see table ? in Ivlev+ (2015)
+include_CR = 0
 zeta_CR = 5e-17
 dust_albedo = 0.5
 NH2_Av = 1e21
@@ -62,3 +63,15 @@ deltae_max = 2
 alpha_cr_elec = -1.5
 beta_cr_elec = 1.7
 C_cr_elec = 2.1e18
+# ----------------------------------------------------------------------------#
+#                            OUTPUT OPTIONS
+# ----------------------------------------------------------------------------#
+#   The programme generates one file with the dust distribution and
+#   (optionally) a plot with the charge distribution. It is advisable to
+#   revise the final charge distribution in order to check that the 
+#   maximum probability is not achieved at one extreme of the distribution.
+#   
+#   out_fname: output name for the file to be written
+#   plot_distribution: plot (1) or not (0)
+out_fname = DustCharge_Distribution.txt
+plot_distribution = 1
