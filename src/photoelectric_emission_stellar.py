@@ -6,7 +6,7 @@ from globals import *
 import numpy as np
 from scipy import integrate
 from dust_charge_distribution_classes import DustGrain
-
+import matplotlib.pyplot as plt
 # # # # # # # # # # # # # # # # # #
 #       Jpe conduction term       #
 # # # # # # # # # # # # # # # # # #
@@ -28,13 +28,17 @@ def Jpe_cond(Grain,Gas,ISRF):
 	else:
 		freq_max = Gas.max_energy/erg_eV/h_planck
 		freq_pdt = get_freq_pdt(Grain)
+		if freq_pdt == 1e12:
+			print("**WARNING** photodetachment frequency too small, set floor value to 1e12 Hz")
 		f = lambda nu: speed_of_light*sigma_pdt(Grain,nu)*ISRF(nu)/(h_planck*np.square(nu))
 		# Try to avoid integration problems
 		nptaux = 5000
 		xxx = np.linspace(freq_pdt,freq_max,nptaux)
 		yyy = np.zeros(nptaux)
+		zzz = np.zeros(nptaux)
 		for i in range(0,nptaux):
-			yyy[i] = f(xxx[i])		
+			yyy[i] = f(xxx[i])
+
 		return np.trapz(yyy,xxx)
 
 def sigma_pdt(Grain,freq):
@@ -62,7 +66,9 @@ def get_freq_pdt(Grain):
 	"""
 	global h_planck
 	Grain_aux = DustGrain(Grain.rad*1e4,Grain.Z + 1, Grain.material, Grain.solid_density)
-	return (Grain_aux.EA + Grain.Emin)/h_planck
+	nupdt = (Grain_aux.EA + Grain.Emin) /h_planck
+	nupdt = np.maximum(nupdt, 1e12) # ISRF at 1e12 is ~ 1e-20
+	return(nupdt)
 
 
 # # # # # # # # # # # # # # # # # #
