@@ -85,6 +85,8 @@ def dust_charge_distribution(Gas, model_data,
 		# 
 		J_pe = Jpe_val(dust_grain_Zm1, Gas, f_lin, f_spline, Qabs_fun,ISRF)
 		J_pe += Jpe_cond(dust_grain_Zm1,Gas,ISRF)
+		print("\t---Jpe_val = ", Jpe_val(dust_grain_Zm1, Gas, f_lin, f_spline, Qabs_fun,ISRF))
+		print("\t---Jpe_cond = ", Jpe_cond(dust_grain_Zm1,Gas,ISRF))
 		J_ion = J_accretion(dust_grain_Zm1,Gas,1)
 		J_electron = J_accretion(dust_grain_Z,Gas,-1)
 		print("\tJpe = {:.2e}".format(J_pe), "Jion = {:.2e}".format(J_ion), "Jel = {:.2e}".format(J_electron))

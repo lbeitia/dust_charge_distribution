@@ -121,3 +121,34 @@ def determine_radiation_field(rf, intensity):
 	else:
 		raise ValueError("Only MMP83 (1) and Solar (2) radiation fields " + 
 				   "have been implemented up to now.")
+				
+
+
+# ----------------------------------------------------------------------------# 
+#        Integrate MMP83 and compute the weight 
+# ----------------------------------------------------------------------------#
+def compute_total_G():
+	"""
+	Integrate ISRF to see the value of G
+	"""
+	global erg_eV, h_planck
+	
+	emin = 6 # eV
+	emax = 13.6 # eV
+	
+	fmin = emin/erg_eV/h_planck
+	fmax = emax/erg_eV/h_planck
+	print("fmin = {:.4e}".format(fmin))
+	print("fmax = {:.4e}".format(fmax))
+	
+	nugrid = np.linspace(fmin, fmax, 5000)
+	radfield = np.zeros(len(nugrid))
+	for freq in range(0, len(nugrid)):
+		radfield[freq] = MMP83(nugrid[freq])/nugrid[freq]
+	Gtot = np.trapz(radfield, nugrid)
+	print("Total G = ", Gtot)
+	print("in Habing units:", Gtot/5.29e-14)
+
+if __name__ == "__main__":
+	compute_total_G()
+
