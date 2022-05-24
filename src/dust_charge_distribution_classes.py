@@ -39,7 +39,7 @@ class DustGrain:
 			self.rad = rad*1e-4 # We work in cgs
 			self.Nc = 468*np.power(self.rad/1e-7,3)
 		else:
-			raise ValueError("Only grains with radius greater than 0.03 microns (Classical grains) are allowed")
+			raise ValueError("Only grains with radius greater than 0.001 microns are allowed")
 		try:
 			self.Z = int(Z)
 		except ValueError:
