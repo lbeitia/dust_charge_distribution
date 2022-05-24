@@ -47,26 +47,50 @@ class DustGrain:
 		self.material = material
 		if self.material == "silicate":
 			self.W = 8*1.6021772e-12 # erg
-			self.EA = 3*1.6021772e-12+(self.Z-0.5)*e_2/self.rad # erg
+			self.EA = self.__get_EA(self.Z)
 		elif self.material == "carbonaceous":
 			self.W = 4.4*1.6021772e-12 # erg
-			self.EA = self.W + (self.Z-0.5)*e_2/self.rad - e_2*4e-8/(self.rad*(self.rad+7e-8)) # erg
+			self.EA = self.__get_EA(self.Z)
 		else:
 			raise AttributeError("This material is not implemented")
-		self.IPv = self.W + (self.Z + 0.5)*e_2/self.rad + (self.Z+2)*e_2*0.3e-8/(self.rad**2)
-		# Minimum energy required for tunneling Emin
+		# Compute IP depending on grain charge
+		if self.Z >= 0:
+			self.IPv = self.W + (self.Z + 0.5)*e_2/self.rad + (self.Z+2)*e_2*0.3e-8/(self.rad**2)
+		else:
+			# IPv for Z < 0 = EA (Z+1)
+			self.IPv = self.__get_EA(self.Z + 1)
+		# Minimum energy required for tunneling Emin.
+		# Computed as van Hoof et al. (2004) eq. 1
 
 		if self.Z >= -1:
 			self.Emin = 0
 		else:
-			Emin = -(Z+1)*(e_2/rad)/(np.power(1+27e-8/rad,0.75))  # eV
-			self.Emin = Emin/erg_eV
+			nu = np.abs(Z+1)
+			theta = nu / (1 + 1/np.sqrt(nu)) # eq 2.4a in Draine & Salpeter 1987
+			cte = theta*(e_2/4/np.pi/self.rad)
+			Emin = cte*(1 - 0.3*np.power(self.rad*1e8/10, -0.45)*np.power(np.absolute(self.Z+1),-0.26))
+			self.Emin = Emin/erg_eV # erg
 
 		# Minimum frequency for photoelectric effect freq_phot		
 		self.freq_phot = (self.IPv + self.Emin)/h_planck # Hz
 		
 		# Internal solid density
 		self.solid_density = soliddens
+	
+	def __get_EA(self, Z0):
+		"""
+		This method computes the electronic affinity
+		Input:
+			Z0: grain charge
+		Returns:
+			EA: electron affinity in erg
+		"""
+		if self.material == "silicate":
+			return(3*1.6021772e-12+(Z0-0.5)*e_2/self.rad) # erg
+		elif self.material == "carbonaceous":
+			return(self.W + (Z0-0.5)*e_2/self.rad - e_2*4e-8/(self.rad*(self.rad+7e-8))) # erg
+		else:
+			raise AttributeError("This material is not implemented")
 
 
 # # # # # # # # # # #

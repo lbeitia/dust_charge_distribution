@@ -3,7 +3,7 @@
 import numpy as np
 from globals import *
 from scipy import integrate
-
+import matplotlib.pyplot as plt
 
 def J_accretion_CRs_elec(Grain, model_data):
 	"""
@@ -18,7 +18,7 @@ def J_accretion_CRs_elec(Grain, model_data):
 	# Discrete integration has been preferred over continuous because
 	# the results for continuous integration were wrong.
 	Emin = 1.5e-2 # eV
-	xE_long = np.logspace(-3, 10, 5000)
+	xE_long = np.logspace(-3, 12, 5000)
 	xE = xE_long[xE_long >= Emin]
 	Je_CR = lambda E: cr_spectrum(model_data, E) * (
 					get_sticking_coef_CR(Grain, E) -
@@ -64,6 +64,7 @@ def cr_spectrum(model_data, E_eV):
 	This function provides the CR spectrum presented in Ivlev+ (2015)
 	"""
 	E0 = 500 * 1e6 # 500 MeV, in eV
-	return(model_data["C_cr_elec"] * np.power(E_eV,
-										   model_data["alpha_cr_elec"]) /
-		np.power(E_eV + E0, model_data["beta_cr_elec"]))
+	jE = model_data["C_cr_elec"] * np.power(E_eV, model_data["alpha_cr_elec"]) / np.power(E_eV + E0, model_data["beta_cr_elec"])
+	if jE < 0.0:
+		jE = 0.0
+	return(jE)
