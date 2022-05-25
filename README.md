@@ -12,3 +12,4 @@ be included as well.
 Several ionic species can be introduced via the input_file.
 
 Stellar spectra already included are: ISRF and Solar.
+

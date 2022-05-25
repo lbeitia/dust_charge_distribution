@@ -85,15 +85,11 @@ def dust_charge_distribution(Gas, model_data,
 		# 
 		J_pe = Jpe_val(dust_grain_Zm1, Gas, f_lin, f_spline, Qabs_fun,ISRF)
 		J_pe += Jpe_cond(dust_grain_Zm1,Gas,ISRF)
-		print("\t---Jpe_val = ", Jpe_val(dust_grain_Zm1, Gas, f_lin, f_spline, Qabs_fun,ISRF))
-		print("\t---Jpe_cond = ", Jpe_cond(dust_grain_Zm1,Gas,ISRF))
 		J_ion = J_accretion(dust_grain_Zm1,Gas,1)
 		J_electron = J_accretion(dust_grain_Z,Gas,-1)
-		print("\tJpe = {:.2e}".format(J_pe), "Jion = {:.2e}".format(J_ion), "Jel = {:.2e}".format(J_electron))
 		if model_data["include_CR"] == 1.0:
 			J_pe_CR = Jpe_CR(dust_grain_Zm1, model_data, f_lin, f_spline, Qabs_fun, F_UV)
 			Je_CR = J_accretion_CRs_elec(dust_grain_Z, model_data)
-			print("\tJpe_CR = {:.2e}".format(J_pe_CR), "Je_CR = {:.2e}".format(Je_CR))
 		# Add probability
 		prob_pos = np.append(prob_pos, 
 					   (J_pe + J_ion + J_pe_CR)*prob_pos[Z-Z0-1]/(J_electron + Je_CR))
@@ -109,11 +105,9 @@ def dust_charge_distribution(Gas, model_data,
 		J_pe += Jpe_cond(dust_grain_Z,Gas,ISRF)
 		J_ion = J_accretion(dust_grain_Z,Gas,1)
 		J_electron = J_accretion(dust_grain_Zp1,Gas,-1)
-		print("\tJpe = {:.2e}".format(J_pe), "Jion = {:.2e}".format(J_ion), "Jel = {:.2e}".format(J_electron))
 		if model_data["include_CR"] == 1.0:
 			J_pe_CR = Jpe_CR(dust_grain_Z, model_data, f_lin, f_spline, Qabs_fun, F_UV)
 			Je_CR = J_accretion_CRs_elec(dust_grain_Zp1, model_data)
-			print("\tJpe_CR = {:.2e}".format(J_pe_CR), "Je_CR = {:.2e}".format(Je_CR))
 		# Add probability
 		prob_neg = np.append(prob_neg, 
 					   prob_neg[Z0-Z-1]*(J_electron + Je_CR)/(J_pe + J_ion + J_pe_CR))

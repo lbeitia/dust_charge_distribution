@@ -33,7 +33,7 @@ def Jpe_cond(Grain,Gas,ISRF):
 		f = lambda nu: speed_of_light*sigma_pdt(Grain,nu)*ISRF(nu)/(h_planck*np.square(nu))
 		# Try to avoid integration problems
 		nptaux = 5000
-		xxx = np.linspace(freq_pdt,freq_max,nptaux)
+		xxx = np.logspace(np.log10(freq_pdt),np.log10(freq_max),nptaux)
 		yyy = np.zeros(nptaux)
 		zzz = np.zeros(nptaux)
 		for i in range(0,nptaux):
@@ -90,12 +90,13 @@ def Jpe_val(Grain,Gas,f_lin,f_spline,Qabs_fun,ISRF):
 	freq_max = Gas.max_energy/erg_eV/h_planck
 	freq_pet = get_freq_pet(Grain)
 	f = lambda nu: speed_of_light*ISRF(nu)*Qabs_fun(speed_of_light*1e4/nu)*PhotYield(Grain,nu,freq_pet,f_lin,f_spline)/(h_planck*np.square(nu))
-	x = np.linspace(freq_pet,freq_max,num=5000)
+	x = np.logspace(np.log10(freq_pet),np.log10(freq_max),num=5000)
 	y = np.zeros(len(x))
 	i = 0
 	while i < len(x):
 		y[i] = f(x[i])
 		i += 1
+
 	return np.pi*np.square(Grain.rad)*integrate.trapz(y,x)
 
 

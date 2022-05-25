@@ -12,8 +12,8 @@
 #	Zmax: maximum charge desired.
 #   The dust size distribution is computed from Zmin to Zmax.
 #   Note that Zmin < Z0 < Zmax
-rad = 0.01
-material = silicate
+rad = 0.1
+material = carbonaceous
 solid_density = 3.5
 Z0 = 0
 Zmin = -3
@@ -33,16 +33,16 @@ Zmax = 3
 max_energy = 13.6
 n_e = 0.0108
 T_e = 7000
-n_ion = [1.653996772E-05,  9.7023692E-06]
+n_ion = [0.0108,  0.0]
 m_ion = [1.672389061e-24, 19.943339241e-24]
 T_ion = [7000, 7000]
 # ----------------------------------------------------------------------------#
 #                            RADIATION FIELD
 # ----------------------------------------------------------------------------#
 #	rf: radiation field selected. 1 = MMP83, 2 = SunRF
-#       rf_intensity: intensity of the radiation field, between 0 and 1.
+#       rf_intensity: intensity of the radiation field
 rf = 1
-rf_intensity = 1
+rf_intensity = 1.217324565560389
 # ----------------------------------------------------------------------------#
 #                            COSMIC RAYS
 # ----------------------------------------------------------------------------#
@@ -63,7 +63,7 @@ rf_intensity = 1
 include_CR = 1
 zeta_CR = 1.146596906622457e-15
 dust_albedo = 0.5
-NH2_Av = 1e21
+NH2_Av = 1.87e21
 Rv = 3.1
 Emax = 0.3
 deltae_max = 2

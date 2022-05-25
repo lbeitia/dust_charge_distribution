@@ -35,7 +35,7 @@ def Jpe_CR(Grain, model_data, f_lin, f_spline, Qabs_fun, F_UV):
 	# Function to integrate
 	f = lambda nu: Qabs_fun(speed_of_light*1e4/nu) * PhotYield(Grain,nu,freq_pet,f_lin,f_spline)
 	# Perform integration
-	x = np.linspace(freq_min_global,freq_max_CR,num=2000)
+	x = np.logspace(np.log10(freq_min_global),np.log10(freq_max_CR),num=2000)
 	y = np.zeros(len(x))
 	for i in range(0,len(x)):
 		y[i] = f(x[i])

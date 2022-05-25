@@ -25,7 +25,7 @@ def interpolate_refractive_indices(material):
 		y = data['Im(n)'][uv_cols]
 		f_lin = interp1d(x,y,kind="linear",fill_value="extrapolate")
 		f_spline = interp1d(x,y,kind="cubic",fill_value = "extrapolate")
-	elif material == "graphite":
+	elif material == "carbonaceous":
 		# Parallel
 		data_para = pd.read_csv('src/refractive_indices/graphite_refractive_indices_para.csv',comment="#",sep="\t")
 		uv_cols = data_para['wave(um)']< 1 # Wavelengths lower than 1 micron

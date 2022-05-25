@@ -41,7 +41,7 @@ def J_accretion(Grain,Gas,species):
 	return(Jacc)
 
 
-def get_Jhat(Grain, Tspecies,species):
+def get_Jhat(Grain, Tspecies, species):
 	"""
 	Function that computes the scaling coefficient Jhat, following Draine & Sutin (1987).
 	We consider that all species are singly charged
