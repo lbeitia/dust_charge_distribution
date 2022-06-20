@@ -89,7 +89,7 @@ def dust_charge_distribution(Gas, model_data,
 		J_electron = J_accretion(dust_grain_Z,Gas,-1)
 		if model_data["include_CR"] == 1.0:
 			J_pe_CR = Jpe_CR(dust_grain_Zm1, model_data, f_lin, f_spline, Qabs_fun, F_UV)
-			Je_CR = J_accretion_CRs_elec(dust_grain_Z, model_data)
+			#Je_CR = J_accretion_CRs_elec(dust_grain_Z, model_data) # uninmportant according to Alexei Ivlev
 		# Add probability
 		prob_pos = np.append(prob_pos, 
 					   (J_pe + J_ion + J_pe_CR)*prob_pos[Z-Z0-1]/(J_electron + Je_CR))
@@ -107,7 +107,7 @@ def dust_charge_distribution(Gas, model_data,
 		J_electron = J_accretion(dust_grain_Zp1,Gas,-1)
 		if model_data["include_CR"] == 1.0:
 			J_pe_CR = Jpe_CR(dust_grain_Z, model_data, f_lin, f_spline, Qabs_fun, F_UV)
-			Je_CR = J_accretion_CRs_elec(dust_grain_Zp1, model_data)
+			#Je_CR = J_accretion_CRs_elec(dust_grain_Zp1, model_data)
 		# Add probability
 		prob_neg = np.append(prob_neg, 
 					   prob_neg[Z0-Z-1]*(J_electron + Je_CR)/(J_pe + J_ion + J_pe_CR))
@@ -143,12 +143,12 @@ def compute_centroid_and_write_file(model_data, probabilities):
 	
 	if model_data['plot_distribution'] == 1.0:
 		fig = plt.figure()
-		plt.plot(Z_values,probabilities,lw=2,color='b')
+		plt.step(Z_values,probabilities,lw=2,color='b', where = "mid")
 		plt.xlabel('Z')
 		plt.ylabel('f(Z)')
 		plt.title("Dust grain "+str(model_data["rad"])+" microns")
 		plt.tight_layout()
-		fig.savefig("Probabilities.eps")
+		fig.savefig("Probabilities.jpeg")
 		plt.close(fig)
 
 

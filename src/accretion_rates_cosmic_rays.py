@@ -26,7 +26,7 @@ def J_accretion_CRs_elec(Grain, model_data):
 	yE = np.zeros(len(xE))
 	for i in range(0,len(xE)):
 		yE[i] = Je_CR(xE[i]) * np.pi * np.power(Grain.rad, 2)
-	discrete = integrate.trapz(yE,xE)
+	discrete = integrate.trapz(yE,xE)	
 	return(discrete)
 
 
@@ -65,6 +65,6 @@ def cr_spectrum(model_data, E_eV):
 	"""
 	E0 = 500 * 1e6 # 500 MeV, in eV
 	jE = model_data["C_cr_elec"] * np.power(E_eV, model_data["alpha_cr_elec"]) / np.power(E_eV + E0, model_data["beta_cr_elec"])
-	if jE < 0.0:
-		jE = 0.0
+	#if jE < 0.0:
+	#	jE = 0.0
 	return(jE)
